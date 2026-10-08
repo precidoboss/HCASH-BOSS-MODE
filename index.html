@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
   :root {
     --fire: #ff6a00;
@@ -4226,5 +4227,81 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closePromoVideo()});
 init();
 startLeaderboardCountdown();
 </script>
+
+<script>
+/* ══════════════════════════════════════════════════════
+   GROTTO MOTION SYSTEM — GSAP
+   Adds cinematic UI motion without changing game logic.
+   ══════════════════════════════════════════════════════ */
+(function initGrottoMotion(){
+  if (!window.gsap) return;
+
+  const boot = () => {
+    const q = (s) => document.querySelector(s);
+    const qa = (s) => Array.from(document.querySelectorAll(s));
+
+    gsap.set(['#hud','#timer-wrap','#question-num','#miner-frame','#miner-stats-display','.pillar-wrap'], {
+      opacity: 0, y: 18
+    });
+
+    gsap.timeline({ defaults:{ ease:'power3.out' } })
+      .to('#hud', { opacity:1, y:0, duration:.55 })
+      .to('#timer-wrap', { opacity:1, y:0, duration:.45 }, '-=.3')
+      .to('#question-num', { opacity:1, y:0, duration:.35 }, '-=.2')
+      .to('#miner-frame', { opacity:1, y:0, scale:1, duration:.7, ease:'back.out(1.4)' }, '-=.15')
+      .to('#miner-stats-display', { opacity:1, y:0, duration:.4 }, '-=.3')
+      .to('.pillar-wrap', {
+        opacity:1, y:0, duration:.45, stagger:.08, ease:'back.out(1.5)'
+      }, '-=.25');
+
+    // Subtle breathing motion keeps the arena alive.
+    gsap.to('#miner-frame', {
+      y: '+=5', duration:2.2, repeat:-1, yoyo:true, ease:'sine.inOut'
+    });
+
+    // Ambient grotto glow.
+    gsap.to('#grotto-bg', {
+      filter:'brightness(1.12)', duration:2.8, repeat:-1, yoyo:true, ease:'sine.inOut'
+    });
+
+    // Interactive answer-card motion.
+    qa('.pillar-wrap').forEach((el) => {
+      el.addEventListener('mouseenter', () => {
+        if (el.classList.contains('disabled')) return;
+        gsap.to(el, { y:-8, scale:1.025, duration:.22, ease:'power2.out' });
+      });
+      el.addEventListener('mouseleave', () => {
+        gsap.to(el, { y:0, scale:1, duration:.3, ease:'power2.out' });
+      });
+    });
+
+    // Make major screen transitions feel intentional.
+    window.grottoMotion = {
+      questionIn() {
+        gsap.fromTo('#miner-frame',
+          { opacity:0, scale:.72, rotateY:35 },
+          { opacity:1, scale:1, rotateY:0, duration:.55, ease:'back.out(1.7)' }
+        );
+        gsap.fromTo('.pillar-wrap',
+          { opacity:0, y:25 },
+          { opacity:1, y:0, duration:.38, stagger:.06, ease:'power3.out' }
+        );
+      },
+      feedback(correct) {
+        const target = correct ? '#miner-frame' : '#game-wrap';
+        gsap.fromTo(target,
+          { x: correct ? 0 : -8 },
+          { x: correct ? 0 : 8, duration:.07, repeat:3, yoyo:true, ease:'none',
+            onComplete:()=>gsap.set(target,{x:0}) }
+        );
+      }
+    };
+  };
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
+</script>
+
 </body>
 </html>
