@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="./HCASH BOSS MODE GAME LOGO.jpg">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>THE GROTTO — HashCash Miner Quiz</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
@@ -1896,7 +1896,7 @@
       <div class="promo-video-title">HCASH BOSS MODE — PRODUCT TRAILER</div>
       <button class="promo-video-close" onclick="closePromoVideo()">✕ CLOSE</button>
     </div>
-    <hyperframes-player id="promo-player" src="./promo/index.html" controls></hyperframes-player>
+    <iframe id="promo-player" title="HCASH BOSS MODE Promo" src="./promo/index.html" style="display:block;width:100%;aspect-ratio:16/9;border:0;border-radius:10px;background:#000" allow="autoplay"></iframe>
   </div>
 </div>
 
@@ -2563,7 +2563,9 @@ const ERC20_ABI = [
 // ══════════════════════════════════════════════════════
 // SUPABASE CLIENT
 // ══════════════════════════════════════════════════════
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+let sb = null;
+try { sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON); }
+catch (e) { console.warn('Supabase unavailable; offline mode enabled.', e); }
 
 // ══════════════════════════════════════════════════════
 // APP STATE
@@ -2680,7 +2682,7 @@ function showPage(name) {
   const btn = document.querySelector(`.nav-btn[data-page="${name}"]`);
   if (btn) btn.classList.add('active');
 
-  if (name === 'leaderboard') { loadLeaderboard(); startCountdown(); }
+  if (name === 'leaderboard') { loadLeaderboard(); if (typeof startLeaderboardCountdown === 'function') startLeaderboardCountdown(); }
   if (name === 'profile') loadProfile();
   if (name === 'howto') { if (miners.length >= 3) startDemo(); }
 }
@@ -3300,6 +3302,7 @@ async function fetchMiners() {
 // HOME STATS
 // ══════════════════════════════════════════════════════
 async function loadHomeStats() {
+  if (!sb) return;
   try {
     const { data: pool } = await sb.from('prize_pool_summary').select('*').single();
     const { count: playerCount } = await sb.from('players').select('*', { count: 'exact', head: true });
@@ -3322,6 +3325,7 @@ const RANK_CLASSES = ['r1','r2','r3','',''];
 
 async function loadLeaderboard() {
   document.getElementById('lb-loading').style.display = 'block';
+  if (!sb) { document.getElementById('lb-loading').style.display='none'; document.getElementById('lb-empty').style.display='block'; document.getElementById('lb-empty').textContent='LEADERBOARD OFFLINE'; return; }
   document.getElementById('lb-table').style.display = 'none';
   document.getElementById('lb-empty').style.display = 'none';
 
@@ -4209,7 +4213,7 @@ function openPromoVideo(){
   modal.classList.add('open');
   document.body.style.overflow='hidden';
   const player=document.getElementById('promo-player');
-  if(player){ setTimeout(()=>{ try{ player.play?.(); }catch(e){} },150); }
+  if(player) player.focus?.();
 }
 function closePromoVideo(){
   const modal=document.getElementById('promo-video-modal');
