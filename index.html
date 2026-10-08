@@ -1872,9 +1872,33 @@
     margin-bottom: 24px;
     line-height: 1.8;
   }
+
+  /* ── HYPERFRAMES PROMO VIDEO ───────────────────── */
+  #promo-video-modal{position:fixed;inset:0;z-index:9000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.88);backdrop-filter:blur(12px);padding:28px}
+  #promo-video-modal.open{display:flex}
+  .promo-video-shell{width:min(1400px,96vw);background:linear-gradient(145deg,rgba(24,15,8,.98),rgba(5,3,2,.98));border:1px solid rgba(255,180,60,.28);border-radius:16px;padding:18px;box-shadow:0 0 100px rgba(255,100,0,.18)}
+  .promo-video-head{display:flex;align-items:center;justify-content:space-between;padding:4px 4px 14px}
+  .promo-video-title{font-family:'Cinzel Decorative',serif;color:var(--gold);font-size:18px;letter-spacing:2px}
+  .promo-video-close{border:1px solid rgba(255,140,0,.25);background:transparent;color:rgba(255,210,150,.75);border-radius:6px;padding:7px 12px;cursor:pointer;font-family:'Share Tech Mono',monospace}
+  .promo-video-close:hover{color:#fff;border-color:var(--fire)}
+  #promo-player{display:block;width:100%;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:#000}
+  @media(max-width:700px){#promo-video-modal{padding:10px}.promo-video-shell{padding:10px}.promo-video-title{font-size:13px}.nav-btn{font-size:9px;padding:6px 8px}}
 </style>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@hyperframes/player"></script>
 </head>
 <body>
+
+
+<!-- HYPERFRAMES PROMO VIDEO -->
+<div id="promo-video-modal" onclick="if(event.target===this)closePromoVideo()">
+  <div class="promo-video-shell">
+    <div class="promo-video-head">
+      <div class="promo-video-title">HCASH BOSS MODE — PRODUCT TRAILER</div>
+      <button class="promo-video-close" onclick="closePromoVideo()">✕ CLOSE</button>
+    </div>
+    <hyperframes-player id="promo-player" src="./promo/index.html" controls></hyperframes-player>
+  </div>
+</div>
 
 <!-- TOAST -->
 <div id="toast"></div>
@@ -1887,6 +1911,7 @@
     <button class="nav-btn" data-page="howto" onclick="showPage('howto')">HOW TO PLAY</button>
     <button class="nav-btn" data-page="leaderboard" onclick="showPage('leaderboard')">LEADERBOARD</button>
     <button class="nav-btn" data-page="profile" onclick="showPage('profile')">MY PROFILE</button>
+    <button id="promo-video-btn" class="nav-btn" onclick="openPromoVideo()">🎬 PROMO VIDEO</button>
     <button id="wallet-btn" onclick="openWalletFlow()">⚡ CONNECT WALLET</button>
     <button id="switch-chain-btn" onclick="openSwitchChainModal()">🔀 SWITCH CHAIN</button>
   </div>
@@ -4175,6 +4200,24 @@ function startLeaderboardCountdown() {
   tick();
   setInterval(tick, 1000);
 }
+
+
+// ── HYPERFRAMES PROMO VIDEO ───────────────────────
+function openPromoVideo(){
+  const modal=document.getElementById('promo-video-modal');
+  if(!modal)return;
+  modal.classList.add('open');
+  document.body.style.overflow='hidden';
+  const player=document.getElementById('promo-player');
+  if(player){ setTimeout(()=>{ try{ player.play?.(); }catch(e){} },150); }
+}
+function closePromoVideo(){
+  const modal=document.getElementById('promo-video-modal');
+  if(!modal)return;
+  modal.classList.remove('open');
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closePromoVideo()});
 
 // ── START ──────────────────────────────────────────
 init();
