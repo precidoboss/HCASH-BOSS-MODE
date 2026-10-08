@@ -116,6 +116,7 @@
   <div class="line"></div>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
   <script>
+    window.__timelines = window.__timelines || {};
     const tl=gsap.timeline({paused:true});
     const scenes=[...document.querySelectorAll('.scene')];
     scenes.forEach((el,i)=>{
@@ -129,6 +130,10 @@
       });
     });
     window.__timelines["root"]=tl;
+    // Direct-browser fallback: autoplay the same composition even outside the HyperFrames player.
+    if (!window.__hyperframes) {
+      tl.play(0);
+    }
   </script>
 </div>
 </body>
