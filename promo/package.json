@@ -1,0 +1,21 @@
+{
+  "name": "hcash-boss-mode-promo",
+  "private": true,
+  "scripts": {
+    "dev": "remotion studio src/index.tsx",
+    "build": "remotion render src/index.tsx HcashBossModePromo out/hcash-boss-mode.mp4",
+    "upgrade": "remotion upgrade"
+  },
+  "dependencies": {
+    "@remotion/cli": "latest",
+    "@remotion/player": "latest",
+    "remotion": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  },
+  "devDependencies": {
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "typescript": "latest"
+  }
+}
